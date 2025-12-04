@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Trash2, Plus, Edit2, Image as ImageIcon, Settings, Package, LayoutGrid, AlertTriangle, MonitorPlay, Users, LogOut, Shield } from 'lucide-react';
 import { Product, StoreSettings, Category, Banner, User } from '../types';
@@ -396,6 +395,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </div>
                     <input placeholder="Name (Hindi)" value={newName} onChange={e => setNewName(e.target.value)} className="w-full p-2 border rounded" required />
                     <input placeholder="Name (English)" value={newEnglishName} onChange={e => setNewEnglishName(e.target.value)} className="w-full p-2 border rounded" />
+                    <input placeholder="Brand (e.g. Tata, MDH)" value={newBrand} onChange={e => setNewBrand(e.target.value)} className="w-full p-2 border rounded" />
+                    
                     <div className="grid grid-cols-2 gap-2">
                          <input placeholder="Price" type="number" value={newPrice} onChange={e => setNewPrice(e.target.value)} className="w-full p-2 border rounded" required />
                          <input placeholder="MRP" type="number" value={newMrp} onChange={e => setNewMrp(e.target.value)} className="w-full p-2 border rounded" />
@@ -408,7 +409,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
                     <button type="submit" className="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700">{editingId ? 'Update' : 'Add'}</button>
-                    {editingId && <button type="button" onClick={() => { setEditingId(null); setNewName(""); setNewPrice(""); setNewImage(undefined); }} className="w-full bg-gray-200 text-gray-700 font-bold py-2 rounded">Cancel</button>}
+                    {editingId && <button type="button" onClick={() => { 
+                      setEditingId(null); 
+                      setNewName(""); 
+                      setNewEnglishName(""); 
+                      setNewBrand("");
+                      setNewPrice(""); 
+                      setNewMrp("");
+                      setNewUnit("");
+                      setNewStock("");
+                      setNewImage(undefined); 
+                    }} className="w-full bg-gray-200 text-gray-700 font-bold py-2 rounded">Cancel</button>}
                 </form>
              </div>
              {/* List */}
