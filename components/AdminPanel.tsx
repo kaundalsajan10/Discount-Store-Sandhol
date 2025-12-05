@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Trash2, Plus, Edit2, Image as ImageIcon, Settings, Package, LayoutGrid, AlertTriangle, MonitorPlay, Users, LogOut, Shield } from 'lucide-react';
 import { Product, StoreSettings, Category, Banner, User } from '../types';
@@ -68,6 +69,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   // Banner State
   const [newBannerImage, setNewBannerImage] = useState<string | undefined>(undefined);
+  const [newBannerOrder, setNewBannerOrder] = useState<number>(1);
 
   // User Mgmt State
   const [newUserUsername, setNewUserUsername] = useState("");
@@ -257,8 +259,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   const handleBannerSubmit = () => {
     if (!newBannerImage) return;
-    onAddBanner({ id: Date.now().toString(), image: newBannerImage });
+    onAddBanner({ id: Date.now().toString(), image: newBannerImage, order: newBannerOrder });
     setNewBannerImage(undefined);
+    setNewBannerOrder(prev => prev + 1);
   };
 
   const handleAddUserSubmit = (e: React.FormEvent) => {
@@ -493,15 +496,28 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                          )}
                          <input type="file" accept="image/*" onChange={handleBannerImageUpload} className="absolute inset-0 opacity-0 cursor-pointer" />
                      </div>
+                     <div className="flex items-center gap-2">
+                        <label className="text-sm text-gray-600">Order/Rank:</label>
+                        <input 
+                            type="number" 
+                            value={newBannerOrder} 
+                            onChange={(e) => setNewBannerOrder(Number(e.target.value))} 
+                            className="w-20 p-2 border rounded text-center"
+                            min="1"
+                        />
+                     </div>
                      <button onClick={handleBannerSubmit} disabled={!newBannerImage} className="w-full bg-blue-600 text-white font-bold py-2 rounded disabled:bg-gray-300">
                         Add Banner
                      </button>
                 </div>
                 
                 <div className="space-y-4">
-                    {banners.map(banner => (
+                    {banners.sort((a,b) => (a.order || 0) - (b.order || 0)).map(banner => (
                         <div key={banner.id} className="relative rounded-lg overflow-hidden border border-gray-200 group">
                             <img src={banner.image} alt="Banner" className="w-full h-32 object-cover" />
+                            <div className="absolute bottom-2 left-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+                                Order: {banner.order}
+                            </div>
                             <button 
                                 onClick={() => onDeleteBanner(banner.id)}
                                 className="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full shadow-md opacity-90 hover:opacity-100"

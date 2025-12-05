@@ -9,15 +9,20 @@ interface BannerCarouselProps {
 export const BannerCarousel: React.FC<BannerCarouselProps> = ({ banners }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Sort banners by order
+  const sortedBanners = React.useMemo(() => {
+    return [...banners].sort((a, b) => (a.order || 0) - (b.order || 0));
+  }, [banners]);
+
   useEffect(() => {
-    if (banners.length <= 1) return;
+    if (sortedBanners.length <= 1) return;
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % banners.length);
+      setCurrentIndex((prev) => (prev + 1) % sortedBanners.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, [banners.length]);
+  }, [sortedBanners.length]);
 
-  if (banners.length === 0) return null;
+  if (sortedBanners.length === 0) return null;
 
   return (
     <div className="relative w-full aspect-[2/1] sm:aspect-[3/1] rounded-xl overflow-hidden shadow-sm bg-gray-100 my-4">
@@ -25,7 +30,7 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({ banners }) => {
         className="flex transition-transform duration-500 ease-in-out h-full"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
-        {banners.map((banner) => (
+        {sortedBanners.map((banner) => (
           <div key={banner.id} className="min-w-full h-full relative">
             <img 
               src={banner.image} 
@@ -38,9 +43,9 @@ export const BannerCarousel: React.FC<BannerCarouselProps> = ({ banners }) => {
       </div>
       
       {/* Indicators */}
-      {banners.length > 1 && (
+      {sortedBanners.length > 1 && (
         <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1.5 z-10">
-            {banners.map((_, idx) => (
+            {sortedBanners.map((_, idx) => (
                 <div 
                     key={idx}
                     className={`w-1.5 h-1.5 rounded-full transition-all ${

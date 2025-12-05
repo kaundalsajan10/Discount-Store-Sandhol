@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Plus, Minus, Package } from 'lucide-react';
+import { Plus, Minus, Package, AlertCircle } from 'lucide-react';
 import { Product } from '../types';
 import { formatCurrency } from '../utils';
 
@@ -16,6 +16,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, quantity, onA
 
   const isOutOfStock = product.stock <= 0;
   const isMaxStockReached = quantity >= product.stock;
+  const isLowStock = !isOutOfStock && product.stock < 5;
 
   // Calculate discount
   const hasDiscount = product.mrp && product.mrp > product.price;
@@ -72,6 +73,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, quantity, onA
           </h3>
           {product.englishName && (
              <p className="text-sm text-gray-500 font-medium">{product.englishName}</p>
+          )}
+          {isLowStock && (
+             <p className="text-[10px] text-red-600 font-bold flex items-center gap-1 mt-0.5 animate-pulse">
+                <AlertCircle size={10} />
+                केवल {product.stock} बचे हैं!
+             </p>
           )}
         </div>
         

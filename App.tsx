@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
-import { ShoppingCart, Search, X, Filter, CheckCircle } from 'lucide-react';
+import { ShoppingCart, Search, X, Filter, CheckCircle, Flame } from 'lucide-react';
 import { Header } from './components/Header';
 import { ProductCard } from './components/ProductCard';
 import { CartSummary } from './components/CartSummary';
@@ -157,6 +157,18 @@ const App: React.FC = () => {
       return Array.from(brands).sort();
   }, [filteredProducts]);
 
+  // Top Deals Logic
+  const topDeals = useMemo(() => {
+    return products
+      .filter(p => p.mrp && p.mrp > p.price)
+      .sort((a, b) => {
+        const discA = a.mrp ? (a.mrp - a.price) / a.mrp : 0;
+        const discB = b.mrp ? (b.mrp - b.price) / b.mrp : 0;
+        return discB - discA;
+      })
+      .slice(0, 10);
+  }, [products]);
+
   // --- Views ---
 
   if (isAdminOpen) {
@@ -186,7 +198,7 @@ const App: React.FC = () => {
   const isHomeView = !searchQuery && !activeCategory;
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans pb-24">
+    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
       {/* Success Modal */}
       {showSuccessModal && (
         <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black bg-opacity-70 backdrop-blur-sm animate-fade-in">
@@ -220,7 +232,7 @@ const App: React.FC = () => {
         </div>
       </div>
 
-      <main className="max-w-3xl mx-auto w-full p-4 pt-2">
+      <main className="max-w-3xl mx-auto w-full p-4 pt-2 flex-grow">
         
         {/* HERO SECTION (Home Only) */}
         {isHomeView && (
@@ -230,7 +242,27 @@ const App: React.FC = () => {
                     categories={categories} 
                     onSelect={(id) => setActiveCategory(id)} 
                 />
-                <h3 className="font-bold text-gray-800 mb-3 text-lg">सभी उत्पाद (All Products)</h3>
+                
+                {topDeals.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
+                       <Flame className="text-orange-600" />
+                       धमाकेदार ऑफर (Top Deals)
+                    </h3>
+                    <div className="flex overflow-x-auto gap-3 pb-2 -mx-4 px-4 no-scrollbar">
+                      {topDeals.map(product => (
+                         <div key={product.id} className="w-[85%] sm:w-[300px] flex-shrink-0">
+                            <ProductCard
+                                product={product}
+                                quantity={cart[product.id] || 0}
+                                onAdd={handleAddToCart}
+                                onRemove={handleRemoveFromCart}
+                            />
+                         </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
             </>
         )}
 
@@ -277,22 +309,24 @@ const App: React.FC = () => {
             </div>
         )}
         
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 gap-3">
-            {filteredProducts.length === 0 ? (
-                <div className="text-center py-10 text-gray-500">No items found.</div>
-            ) : (
-                filteredProducts.map((product) => (
-                    <ProductCard
-                        key={product.id}
-                        product={product}
-                        quantity={cart[product.id] || 0}
-                        onAdd={handleAddToCart}
-                        onRemove={handleRemoveFromCart}
-                    />
-                ))
-            )}
-        </div>
+        {/* Product Grid - Only shown when NOT in home view (e.g., category selected or search active) */}
+        {!isHomeView && (
+            <div className="grid grid-cols-1 gap-3">
+                {filteredProducts.length === 0 ? (
+                    <div className="text-center py-10 text-gray-500">No items found.</div>
+                ) : (
+                    filteredProducts.map((product) => (
+                        <ProductCard
+                            key={product.id}
+                            product={product}
+                            quantity={cart[product.id] || 0}
+                            onAdd={handleAddToCart}
+                            onRemove={handleRemoveFromCart}
+                        />
+                    ))
+                )}
+            </div>
+        )}
       </main>
       
       {/* Footer Added Here */}
