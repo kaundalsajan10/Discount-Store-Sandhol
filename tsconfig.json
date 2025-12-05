@@ -22,4 +22,23 @@
   },
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }] 
+  {
+  "compilerOptions": {
+    // These are CRITICAL for resolving modules correctly with Vite
+    "module": "ESNext",
+    "moduleResolution": "Node", // Use "Node" for Vercel/Linux compatibility
+    "target": "ESNext",
+    
+    // Other standard React/Vite settings
+    "jsx": "react-jsx",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    // Ensure this matches your Vercel Node.js version
+    "lib": ["ESNext", "DOM", "DOM.Iterable"] 
+  },
+  "include": ["src"],
+  // Ensure "index.html" is NOT included here, as it's the entry point
+  "exclude": ["node_modules", "dist"] 
+}
 }
