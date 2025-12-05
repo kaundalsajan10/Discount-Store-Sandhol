@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="hi">
   <head>
@@ -11,6 +12,20 @@
       body {
         font-family: 'Hind', sans-serif;
         -webkit-tap-highlight-color: transparent;
+      }
+      @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+      .animate-marquee {
+        animation: marquee 30s linear infinite;
+      }
+      .animate-marquee:hover {
+        animation-play-state: paused;
+      }
+      /* Pause on touch for mobile */
+      .animate-marquee:active {
+        animation-play-state: paused;
       }
     </style>
   <script type="importmap">

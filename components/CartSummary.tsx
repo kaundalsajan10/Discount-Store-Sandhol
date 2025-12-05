@@ -25,6 +25,14 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ items, settings, onBac
   const deliveryFee = isFreeDelivery ? 0 : settings.deliveryFee;
   const grandTotal = totalAmount + deliveryFee;
 
+  // Checkout Validation Logic
+  const currentHour = new Date().getHours();
+  const isShopOpen = currentHour >= 7 && currentHour < 19; // 7 AM to 7 PM
+  const minItemsMet = items.length >= 2;
+  const minValueMet = totalAmount >= (settings.minOrderValue || 0);
+
+  const checkoutDisabled = !isShopOpen || !minItemsMet || !minValueMet;
+
   const handleCheckout = (customer: CustomerDetails) => {
     const link = generateWhatsAppLink(items, totalAmount, deliveryFee, customer);
     window.open(link, '_blank');
@@ -52,7 +60,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ items, settings, onBac
       </div>
 
       {/* List */}
-      <div className="flex-1 p-4 pb-32">
+      <div className="flex-1 p-4 pb-48">
         {items.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-[70vh] text-center p-6">
             <div className="bg-orange-50 p-6 rounded-full mb-6 relative">
@@ -172,10 +180,28 @@ export const CartSummary: React.FC<CartSummaryProps> = ({ items, settings, onBac
       {/* Footer Actions */}
       {items.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] z-30">
-           <div className="max-w-3xl mx-auto">
+           <div className="max-w-3xl mx-auto space-y-2">
+              {/* Error Messages */}
+              {!isShopOpen && (
+                 <div className="text-red-600 text-xs font-bold text-center bg-red-50 p-2 rounded border border-red-100">
+                    दुकान बंद है! कृपया सुबह 7 बजे से शाम 7 बजे के बीच ऑर्डर करें।
+                 </div>
+              )}
+              {isShopOpen && !minItemsMet && (
+                 <div className="text-orange-600 text-xs font-bold text-center bg-orange-50 p-2 rounded border border-orange-100">
+                    कम से कम 2 अलग-अलग आइटम जोड़ें (Add at least 2 different items).
+                 </div>
+              )}
+              {isShopOpen && minItemsMet && !minValueMet && (
+                 <div className="text-orange-600 text-xs font-bold text-center bg-orange-50 p-2 rounded border border-orange-100">
+                    न्यूनतम ऑर्डर राशि {formatCurrency(settings.minOrderValue || 0)} होनी चाहिए।
+                 </div>
+              )}
+
               <button 
                 onClick={() => setShowConfirm(true)}
-                className="w-full bg-[#25D366] hover:bg-[#128C7E] active:bg-[#075E54] text-white text-lg font-bold py-3.5 px-6 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+                disabled={checkoutDisabled}
+                className={`w-full text-white text-lg font-bold py-3.5 px-6 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${checkoutDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#25D366] hover:bg-[#128C7E] active:bg-[#075E54]'}`}
               >
                 <MessageCircle size={24} className="text-white fill-current" />
                 <span>WhatsApp पर ऑर्डर करें</span>

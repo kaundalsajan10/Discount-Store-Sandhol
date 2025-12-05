@@ -8,7 +8,8 @@ export const STORE_NAME = "Discount store Sandhole";
 export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   minFreeDeliveryAmount: 499,
   deliveryFee: 40,
-  logo: undefined
+  logo: undefined,
+  minOrderValue: 100
 };
 
 export const INITIAL_USERS: User[] = [
@@ -40,10 +41,10 @@ export const INITIAL_CATEGORIES: Category[] = [
   { id: 'drinks_juices', name: 'कोल्ड ड्रिंक्स और जूस (Drinks & Juices)', image: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=200' },
   { id: 'gifts', name: 'उपहार (Gifts)', image: 'https://images.unsplash.com/photo-1549465220-1a8b9238cd48?auto=format&fit=crop&q=80&w=200' },
   { id: 'fruits_veg', name: 'फल और सब्जियां (Fruits & Veg)', image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&q=80&w=200' },
-  { id: 'dry_fruits', name: 'सूखे मेवे (Dry Fruits)', image: 'https://images.unsplash.com/photo-1595412154866-105c33a9277d?auto=format&fit=crop&q=80&w=200' },
+  { id: 'dry_fruits', name: 'सूखे मेवे (Dry Fruits)', image: 'https://images.unsplash.com/photo-1596591606975-97ee5cef3a1e?auto=format&fit=crop&q=80&w=200' },
   { id: 'shampoo_soap', name: 'शैम्पू और साबुन (Personal Care)', image: 'https://images.unsplash.com/photo-1631729371254-42c2892f0e6e?auto=format&fit=crop&q=80&w=200' },
   { id: 'home_needs', name: 'घर की जरूरतें (Home Needs)', image: 'https://images.unsplash.com/photo-1563453392212-326f5e854473?auto=format&fit=crop&q=80&w=200' },
-  { id: 'school_supply', name: 'स्कूल का सामान (School Supply)', image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=200' },
+  { id: 'school_supply', name: 'स्टेशनरी (Stationery)', image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&q=80&w=200' },
 ];
 
 export const INITIAL_PRODUCTS: Product[] = [
@@ -179,7 +180,7 @@ export const INITIAL_PRODUCTS: Product[] = [
   { id: 'hn9', name: 'स्क्रबर', englishName: 'Scotch Brite', brand: '3M', price: 20, mrp: 25, unit: '1 pc', stock: 60, categoryId: 'home_needs', imageSeed: 'scrubber' },
   { id: 'hn10', name: 'ओडोनिल', englishName: 'Odonil Block', brand: 'Odonil', price: 55, mrp: 60, unit: '1 pc', stock: 30, categoryId: 'home_needs', imageSeed: 'odonil' },
 
-  // --- School Supply ---
+  // --- Stationers (Renamed from School Supply) ---
   { id: 'ss1', name: 'नोटबुक (रजिस्टर)', englishName: 'Classmate Notebook', brand: 'Classmate', price: 60, mrp: 75, unit: '1 pc', stock: 50, categoryId: 'school_supply', imageSeed: 'notebook' },
   { id: 'ss2', name: 'ब्लू पेन', englishName: 'Blue Pen (Pack)', brand: 'Cello', price: 25, mrp: 30, unit: '5 pcs', stock: 60, categoryId: 'school_supply', imageSeed: 'pen_blue' },
   { id: 'ss3', name: 'पेंसिल बॉक्स', englishName: 'Apsara Pencils', brand: 'Apsara', price: 50, mrp: 60, unit: '1 box', stock: 40, categoryId: 'school_supply', imageSeed: 'pencil_box' },

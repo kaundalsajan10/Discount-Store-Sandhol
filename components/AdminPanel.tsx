@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Trash2, Plus, Edit2, Image as ImageIcon, Settings, Package, LayoutGrid, AlertTriangle, MonitorPlay, Users, LogOut, Shield } from 'lucide-react';
+import { ArrowLeft, Trash2, Plus, Edit2, Image as ImageIcon, Settings, Package, LayoutGrid, AlertTriangle, MonitorPlay, Users, LogOut, Shield, Filter } from 'lucide-react';
 import { Product, StoreSettings, Category, Banner, User } from '../types';
 import { formatCurrency, resizeImage } from '../utils';
 
@@ -61,6 +61,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   // Settings State
   const [deliveryFee, setDeliveryFee] = useState(settings.deliveryFee.toString());
   const [minFreeDelivery, setMinFreeDelivery] = useState(settings.minFreeDeliveryAmount.toString());
+  const [minOrderValue, setMinOrderValue] = useState(settings.minOrderValue?.toString() || "100");
   const [storeLogo, setStoreLogo] = useState<string | undefined>(settings.logo);
 
   // Category State
@@ -88,6 +89,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [newStock, setNewStock] = useState("");
   const [newCategory, setNewCategory] = useState(categories[0]?.id || "");
   const [newImage, setNewImage] = useState<string | undefined>(undefined);
+
+  // Product Filter State
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>("all");
 
   useEffect(() => {
     let timer: any;
@@ -287,10 +291,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       onUpdateSettings({ 
           deliveryFee: Number(deliveryFee), 
           minFreeDeliveryAmount: Number(minFreeDelivery),
-          logo: storeLogo
+          logo: storeLogo,
+          minOrderValue: Number(minOrderValue)
       }); 
       alert("Saved");
   };
+
+  // Helper functions for filtering and display
+  const getCategoryName = (categoryId: string) => {
+    return categories.find(c => c.id === categoryId)?.name || 'Unknown';
+  };
+
+  const filteredProducts = products.filter(p => 
+      selectedCategoryFilter === 'all' ? true : p.categoryId === selectedCategoryFilter
+  );
 
   if (!currentUser) {
     return (
@@ -425,27 +439,68 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     }} className="w-full bg-gray-200 text-gray-700 font-bold py-2 rounded">Cancel</button>}
                 </form>
              </div>
+
+             {/* Category Filter */}
+             <div className="flex items-center gap-2 mb-2 overflow-x-auto no-scrollbar pb-2">
+                <Filter size={16} className="text-gray-500 flex-shrink-0" />
+                <button 
+                    onClick={() => setSelectedCategoryFilter('all')}
+                    className={`whitespace-nowrap px-3 py-1 rounded-full text-xs font-bold border transition-colors ${
+                        selectedCategoryFilter === 'all' 
+                        ? 'bg-gray-800 text-white border-gray-800' 
+                        : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                    }`}
+                >
+                    All Items
+                </button>
+                {categories.map(cat => (
+                    <button 
+                        key={cat.id}
+                        onClick={() => setSelectedCategoryFilter(cat.id)}
+                        className={`whitespace-nowrap px-3 py-1 rounded-full text-xs font-bold border transition-colors ${
+                            selectedCategoryFilter === cat.id 
+                            ? 'bg-gray-800 text-white border-gray-800' 
+                            : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-50'
+                        }`}
+                    >
+                        {cat.name}
+                    </button>
+                ))}
+             </div>
+
              {/* List */}
              <div className="space-y-2">
-                {products.map(p => (
-                    <div key={p.id} className="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center">
+                {filteredProducts.map(p => (
+                    <div key={p.id} className="bg-white p-3 rounded-lg shadow-sm flex justify-between items-center border border-gray-100">
                         <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-gray-100 rounded overflow-hidden">
-                                {p.image ? <img src={p.image} className="w-full h-full object-cover"/> : <Package className="p-2 text-gray-400"/>}
+                            <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0 border border-gray-200">
+                                {p.image ? <img src={p.image} className="w-full h-full object-cover"/> : <Package className="p-2 text-gray-400 w-full h-full"/>}
                             </div>
                             <div>
-                                <div className="font-bold text-sm">{p.name}</div>
-                                <div className="text-xs text-gray-500">{formatCurrency(p.price)} | Stock: {p.stock}</div>
+                                <div className="font-bold text-sm text-gray-800">{p.name}</div>
+                                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-0.5">
+                                    <span className="text-[10px] bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded border border-blue-100 font-medium">
+                                        {getCategoryName(p.categoryId)}
+                                    </span>
+                                    <span className="text-xs text-gray-500 font-medium">
+                                        {formatCurrency(p.price)} • Stock: {p.stock}
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                        <div className="flex gap-2">
-                            <button onClick={() => handleEditClick(p)} className="text-blue-500"><Edit2 size={18} /></button>
+                        <div className="flex gap-2 pl-2">
+                            <button onClick={() => handleEditClick(p)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded transition-colors"><Edit2 size={18} /></button>
                             {isSuperAdmin && (
-                                <button onClick={() => { if(window.confirm('Delete?')) onDeleteProduct(p.id); }} className="text-red-500"><Trash2 size={18} /></button>
+                                <button onClick={() => { if(window.confirm('Delete?')) onDeleteProduct(p.id); }} className="text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors"><Trash2 size={18} /></button>
                             )}
                         </div>
                     </div>
                 ))}
+                {filteredProducts.length === 0 && (
+                    <div className="text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-300 text-gray-500 text-sm">
+                        No products found in this category.
+                    </div>
+                )}
              </div>
           </>
         )}
@@ -557,6 +612,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                             <label className="block text-sm font-medium text-gray-700 mb-1">Min Free Delivery (₹)</label>
                             <input type="number" value={minFreeDelivery} onChange={e => setMinFreeDelivery(e.target.value)} className="w-full p-2 border rounded" placeholder="Min Free Delivery" />
                          </div>
+                     </div>
+                     <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Min Order Value (₹)</label>
+                        <input type="number" value={minOrderValue} onChange={e => setMinOrderValue(e.target.value)} className="w-full p-2 border rounded" placeholder="Min Order Value" />
                      </div>
                      <button className="w-full bg-blue-600 text-white py-2 rounded font-bold">Save Settings</button>
                  </div>

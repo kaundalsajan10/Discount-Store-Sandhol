@@ -8,6 +8,7 @@ import { AdminPanel } from './components/AdminPanel';
 import { BannerCarousel } from './components/BannerCarousel';
 import { CategoryGrid } from './components/CategoryGrid';
 import { Footer } from './components/Footer';
+import { TopDealsCarousel } from './components/TopDealsCarousel';
 import { INITIAL_CATEGORIES, INITIAL_PRODUCTS, DEFAULT_STORE_SETTINGS, INITIAL_BANNERS, INITIAL_USERS } from './constants';
 import { CartState, CartItem, Product, StoreSettings, Category, Banner, User } from './types';
 import { formatCurrency } from './utils';
@@ -24,7 +25,10 @@ const App: React.FC = () => {
     try { return JSON.parse(localStorage.getItem('banners') || '') || INITIAL_BANNERS; } catch { return INITIAL_BANNERS; }
   });
   const [storeSettings, setStoreSettings] = useState<StoreSettings>(() => {
-    try { return JSON.parse(localStorage.getItem('storeSettings') || '') || DEFAULT_STORE_SETTINGS; } catch { return DEFAULT_STORE_SETTINGS; }
+    try { 
+        const saved = JSON.parse(localStorage.getItem('storeSettings') || '');
+        return { ...DEFAULT_STORE_SETTINGS, ...saved }; 
+    } catch { return DEFAULT_STORE_SETTINGS; }
   });
   const [users, setUsers] = useState<User[]>(() => {
     try { return JSON.parse(localStorage.getItem('users') || '') || INITIAL_USERS; } catch { return INITIAL_USERS; }
@@ -244,24 +248,12 @@ const App: React.FC = () => {
                 />
                 
                 {topDeals.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="font-bold text-gray-800 mb-3 text-lg flex items-center gap-2">
-                       <Flame className="text-orange-600" />
-                       धमाकेदार ऑफर (Top Deals)
-                    </h3>
-                    <div className="flex overflow-x-auto gap-3 pb-2 -mx-4 px-4 no-scrollbar">
-                      {topDeals.map(product => (
-                         <div key={product.id} className="w-[85%] sm:w-[300px] flex-shrink-0">
-                            <ProductCard
-                                product={product}
-                                quantity={cart[product.id] || 0}
-                                onAdd={handleAddToCart}
-                                onRemove={handleRemoveFromCart}
-                            />
-                         </div>
-                      ))}
-                    </div>
-                  </div>
+                  <TopDealsCarousel 
+                    products={topDeals}
+                    cart={cart}
+                    onAdd={handleAddToCart}
+                    onRemove={handleRemoveFromCart}
+                  />
                 )}
             </>
         )}

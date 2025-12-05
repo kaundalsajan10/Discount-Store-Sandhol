@@ -39,6 +39,7 @@ export interface StoreSettings {
   minFreeDeliveryAmount: number;
   deliveryFee: number;
   logo?: string; // New: Store Logo
+  minOrderValue: number; // New: Min Order Value
 }
 
 export type CartState = Record<string, number>;

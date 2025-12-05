@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Plus, Minus, Package, AlertCircle } from 'lucide-react';
+import { Plus, Minus, Package, AlertCircle, Check } from 'lucide-react';
 import { Product } from '../types';
 import { formatCurrency } from '../utils';
 
@@ -111,22 +111,24 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, quantity, onA
             ) : quantity === 0 ? (
               <button
                 onClick={handleAdd}
-                className={`bg-orange-100 text-orange-700 px-4 py-2 rounded-lg font-bold text-sm border border-orange-200 hover:bg-orange-200 transition-all opacity-0 group-hover:opacity-100 ${isAnimating ? 'scale-95 bg-orange-300' : 'active:scale-95'}`}
+                className={`bg-orange-100 text-orange-700 px-4 py-2 rounded-lg font-bold text-sm border border-orange-200 hover:bg-orange-200 transition-all duration-200 opacity-0 group-hover:opacity-100 ${isAnimating ? 'scale-90 opacity-75' : 'active:scale-95'}`}
               >
                 जोड़ें (Add)
               </button>
             ) : (
-              <div className="flex items-center bg-orange-50 rounded-lg border border-orange-200 overflow-hidden shadow-sm">
+              <div className="flex items-center bg-green-50 rounded-lg border border-green-500 overflow-hidden shadow-sm transition-all">
                 <button 
                   onClick={() => onRemove(product.id)}
-                  className="w-8 h-8 flex items-center justify-center text-orange-700 hover:bg-orange-100 active:bg-orange-200"
+                  className="w-8 h-8 flex items-center justify-center text-green-700 hover:bg-green-100 active:bg-green-200 transition-colors"
                 >
                   <Minus size={16} />
                 </button>
-                <span className="w-8 text-center font-bold text-orange-900 text-sm">{quantity}</span>
+                <div className="w-10 text-center font-bold text-green-900 text-sm flex items-center justify-center gap-0.5 bg-green-100 h-8">
+                   {quantity} <Check size={12} strokeWidth={3} />
+                </div>
                 <button 
                   onClick={handleAdd}
-                  className={`w-8 h-8 flex items-center justify-center text-orange-700 transition-all ${isMaxStockReached ? 'opacity-40 cursor-not-allowed' : 'hover:bg-orange-100'} ${isAnimating ? 'bg-orange-200 scale-90' : 'active:bg-orange-200'}`}
+                  className={`w-8 h-8 flex items-center justify-center text-green-700 transition-all duration-200 ${isMaxStockReached ? 'opacity-40 cursor-not-allowed' : 'hover:bg-green-100'} ${isAnimating ? 'bg-green-200 scale-75 opacity-70' : 'active:bg-green-200'}`}
                   disabled={isMaxStockReached}
                 >
                   <Plus size={16} />
