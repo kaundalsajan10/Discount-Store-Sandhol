@@ -5,6 +5,16 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, '.', '');
     return {
+        resolve: {
+    // Keep your existing alias
+        alias: {
+          '@': path.resolve(__dirname, '.'),
+        },
+        // 💡 NEW: Tell Rollup/Vite to prioritize looking in the project root
+        mainFields: ['module', 'jsnext:main', 'jsnext'], 
+      },
+      // 💡 NEW: Explicitly define the build root
+      root: './',
       // 💡 NEW: Set the base path for Vercel deployment
       base: '/', 
 
