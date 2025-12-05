@@ -1,44 +1,26 @@
 {
   "compilerOptions": {
-    // Vite requires "ESNext" for modern module handling
-    "target": "ESNext", 
+    "target": "ESNext",
     "useDefineForClassFields": true,
-    
-    // Crucially, Vite uses ESM, so set module to "ESNext" or "NodeNext"
-    "module": "ESNext", 
-    "moduleResolution": "Node", // Use "Node" resolution for compatibility
-    
+    "module": "ESNext",
+    "moduleResolution": "Node",
     "strict": true,
     "jsx": "react-jsx",
     "sourceMap": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    
-    // Add paths for the root directory (optional, but good practice)
     "paths": {
-      "@/*": ["./*"] 
+      "@/*": ["./*"]
     }
   },
   "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }] 
-  {
-  "compilerOptions": {
-    // These are CRITICAL for resolving modules correctly with Vite
-    "module": "ESNext",
-    "moduleResolution": "Node", // Use "Node" for Vercel/Linux compatibility
-    "target": "ESNext",
-    
-    // Other standard React/Vite settings
-    "jsx": "react-jsx",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    // Ensure this matches your Vercel Node.js version
-    "lib": ["ESNext", "DOM", "DOM.Iterable"] 
-  },
-  "include": ["src"],
-  // Ensure "index.html" is NOT included here, as it's the entry point
-  "exclude": ["node_modules", "dist"] 
-}
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { 
+      "path": "./tsconfig.node.json" 
+    }
+  ]
 }
