@@ -1,29 +1,25 @@
 {
   "compilerOptions": {
-    "target": "ES2022",
-    "experimentalDecorators": true,
-    "useDefineForClassFields": false,
-    "module": "ESNext",
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
-    "skipLibCheck": true,
-    "types": [
-      "node"
-    ],
-    "moduleResolution": "bundler",
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "allowJs": true,
+    // Vite requires "ESNext" for modern module handling
+    "target": "ESNext", 
+    "useDefineForClassFields": true,
+    
+    // Crucially, Vite uses ESM, so set module to "ESNext" or "NodeNext"
+    "module": "ESNext", 
+    "moduleResolution": "Node", // Use "Node" resolution for compatibility
+    
+    "strict": true,
     "jsx": "react-jsx",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    
+    // Add paths for the root directory (optional, but good practice)
     "paths": {
-      "@/*": [
-        "./*"
-      ]
-    },
-    "allowImportingTsExtensions": true,
-    "noEmit": true
-  }
+      "@/*": ["./*"] 
+    }
+  },
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }] 
 }
