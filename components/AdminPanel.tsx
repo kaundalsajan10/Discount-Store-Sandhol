@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Trash2, Plus, Edit2, Image as ImageIcon, Settings, Package, LayoutGrid, AlertTriangle, MonitorPlay, Users, LogOut, Shield, Filter } from 'lucide-react';
+import { ArrowLeft, Trash2, Plus, Edit2, Image as ImageIcon, Settings, Package, LayoutGrid, MonitorPlay, Users, LogOut, Filter } from 'lucide-react';
 import { Product, StoreSettings, Category, Banner, User } from '../types';
-import { formatCurrency, resizeImage } from '../utils';
+import { resizeImage } from '../utils';
+import { formatCurrency } from '../utils';
 
 interface AdminPanelProps {
   products: Product[];
@@ -65,6 +66,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [storeLogo, setStoreLogo] = useState<string | undefined>(settings.logo);
 
   // Category State
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryImage, setNewCategoryImage] = useState<string | undefined>(undefined);
 
@@ -255,8 +257,26 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     e.preventDefault();
     if(!newCategoryName.trim()) return;
 
-    const id = newCategoryName.toLowerCase().replace(/\s+/g, '_');
-    onAddCategory({ id, name: newCategoryName, image: newCategoryImage });
+    if (editingCategoryId) {
+        onUpdateCategory({ id: editingCategoryId, name: newCategoryName, image: newCategoryImage });
+    } else {
+        const id = newCategoryName.toLowerCase().replace(/\s+/g, '_');
+        onAddCategory({ id, name: newCategoryName, image: newCategoryImage });
+    }
+    setEditingCategoryId(null);
+    setNewCategoryName("");
+    setNewCategoryImage(undefined);
+  };
+
+  const handleEditCategoryClick = (cat: Category) => {
+    setEditingCategoryId(cat.id);
+    setNewCategoryName(cat.name);
+    setNewCategoryImage(cat.image);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelCategoryEdit = () => {
+    setEditingCategoryId(null);
     setNewCategoryName("");
     setNewCategoryImage(undefined);
   };
@@ -507,18 +527,30 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
         {isSuperAdmin && activeTab === 'categories' && (
              <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
-                <h3 className="font-bold mb-4 flex items-center gap-2">श्रेणियाँ (Categories)</h3>
+                <h3 className="font-bold mb-4 flex items-center gap-2">
+                  {editingCategoryId ? <Edit2 size={16}/> : <Plus size={16}/>} 
+                  {editingCategoryId ? 'श्रेणी अपडेट करें (Update Category)' : 'नई श्रेणी (Add Category)'}
+                </h3>
                 <form onSubmit={handleCategorySubmit} className="space-y-3 mb-6">
                     <div className="flex items-center gap-4">
                          <div className="w-16 h-16 bg-gray-100 rounded border flex items-center justify-center overflow-hidden">
                             {newCategoryImage ? <img src={newCategoryImage} className="w-full h-full object-cover"/> : <ImageIcon className="text-gray-400"/>}
                         </div>
                         <label className="text-sm bg-gray-100 px-3 py-2 rounded cursor-pointer hover:bg-gray-200">
-                           फोटो <input type="file" accept="image/*" onChange={handleCategoryImageUpload} className="hidden" />
+                           फोटो बदलें <input type="file" accept="image/*" onChange={handleCategoryImageUpload} className="hidden" />
                         </label>
                     </div>
                     <input value={newCategoryName} onChange={e => setNewCategoryName(e.target.value)} placeholder="Category Name" className="w-full p-2 border rounded" required />
-                    <button type="submit" className="w-full bg-green-600 text-white font-bold py-2 rounded">Add Category</button>
+                    <div className="flex gap-2">
+                        <button type="submit" className="flex-1 bg-green-600 text-white font-bold py-2 rounded hover:bg-green-700">
+                            {editingCategoryId ? 'Update Category' : 'Add Category'}
+                        </button>
+                        {editingCategoryId && (
+                            <button type="button" onClick={handleCancelCategoryEdit} className="px-4 bg-gray-200 text-gray-700 font-bold py-2 rounded hover:bg-gray-300">
+                                Cancel
+                            </button>
+                        )}
+                    </div>
                 </form>
                 <div className="space-y-2">
                     {categories.map(cat => (
@@ -529,7 +561,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                  </div>
                                  <span className="font-medium">{cat.name}</span>
                              </div>
-                             <button onClick={() => onDeleteCategory(cat.id)} className="text-red-500"><Trash2 size={18}/></button>
+                             <div className="flex gap-2">
+                                 <button onClick={() => handleEditCategoryClick(cat)} className="text-blue-500 hover:bg-blue-50 p-1.5 rounded transition-colors"><Edit2 size={18} /></button>
+                                 <button onClick={() => onDeleteCategory(cat.id)} className="text-red-500 hover:bg-red-50 p-1.5 rounded transition-colors"><Trash2 size={18}/></button>
+                             </div>
                         </div>
                     ))}
                 </div>
